@@ -69,20 +69,6 @@ app.post('/teacher/login', async (req, res) => {
 });
 app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
-    console.log(teacher_id);
-    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
-    const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) }));
-    if (!teacher) {
-        res.status(404).send('Teacher not found');
-    }
-    else {
-        const updatedTeacher = Object.assign(Object.assign({}, teacher), { adventures: [...teacher.adventures, adventure] });
-        await (db === null || db === void 0 ? void 0 : db.collection('teachers').updateOne({ _id: teacher_id }, { $set: updatedTeacher }));
-        res.send(updatedTeacher);
-    }
-});
-app.post('/teacher/adventure', async (req, res) => {
-    const { teacher_id, adventure } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: teacher_id }));
     if (!teacher) {
