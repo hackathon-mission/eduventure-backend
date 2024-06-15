@@ -143,6 +143,7 @@ app.post('/teacher/login', async (req, res) => {
 
 app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
+    console.log(teacher_id);
     const db = client?.db('eduventure');
     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
 

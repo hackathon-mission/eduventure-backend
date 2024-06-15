@@ -69,6 +69,7 @@ app.post('/teacher/login', async (req, res) => {
 });
 app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
+    console.log(teacher_id);
     const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
     const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: teacher_id }));
     if (!teacher) {
