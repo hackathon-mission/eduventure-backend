@@ -1,5 +1,5 @@
 import express from 'express';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { configDotenv } from 'dotenv';
 // helper functions
 let teacherExists = (username) => {
@@ -71,7 +71,7 @@ app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
     console.log(teacher_id);
     const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
-    const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: teacher_id }));
+    const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) }));
     if (!teacher) {
         res.status(404).send('Teacher not found');
     }
@@ -94,24 +94,22 @@ app.post('/teacher/adventure', async (req, res) => {
         res.send(updatedTeacher);
     }
 });
-app.get('/teacher/adventure/:adventure_id', async (req, res) => {
-    const { adventure_id } = req.params;
-    const { teacher_id } = req.query;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
-    const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: teacher_id }));
-    if (!teacher) {
-        res.status(404).send('Teacher not found');
-    }
-    else {
-        const adventure = teacher.adventures.find((adv) => adv._id === adventure_id);
-        if (!adventure) {
-            res.status(404).send('Adventure not found');
-        }
-        else {
-            res.send(adventure);
-        }
-    }
-});
+// app.get('/teacher/adventure/:adventure_id', async (req, res) => {
+//     const { adventure_id } = req.params;
+//     const { teacher_id } = req.query;
+//     const db = client?.db('eduventure');
+//     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
+//     if (!teacher) {
+//         res.status(404).send('Teacher not found');
+//     } else {
+//         const adventure = teacher.adventures.find((adv) => adv._id === adventure_id);
+//         if (!adventure) {
+//             res.status(404).send('Adventure not found');
+//         } else {
+//             res.send(adventure);
+//         }
+//     }
+// });
 app.post('/teacher/register', async (req, res) => {
     const { username, realname } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
@@ -128,7 +126,7 @@ app.post('/teacher/register', async (req, res) => {
 app.get('user/:id', async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
-    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: id }));
+    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
     if (!user) {
         res.status(404).send('User not found');
     }
@@ -152,7 +150,7 @@ app.post('/user/:id', async (req, res) => {
 app.get('/teacher/:id', async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
-    const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: id }));
+    const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: ObjectId.createFromHexString(id) }));
     if (!teacher) {
         res.status(404).send('Teacher not found');
     }
@@ -163,13 +161,13 @@ app.get('/teacher/:id', async (req, res) => {
 app.post('/teacher/:id', async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
-    const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: id }));
+    const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: ObjectId.createFromHexString(id) }));
     if (!teacher) {
         res.status(404).send('Teacher not found');
     }
     else {
         const updatedTeacher = Object.assign(Object.assign({}, teacher), req.body);
-        await (db === null || db === void 0 ? void 0 : db.collection('teachers').updateOne({ _id: id }, { $set: updatedTeacher }));
+        await (db === null || db === void 0 ? void 0 : db.collection('teachers').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: updatedTeacher }));
         res.send(updatedTeacher);
     }
 });

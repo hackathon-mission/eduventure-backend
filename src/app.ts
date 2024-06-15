@@ -1,11 +1,11 @@
 import express from 'express';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { configDotenv } from 'dotenv';
 
 // interfaces
 
 interface User {
-    _id?: string;
+    _id?: ObjectId;
     username: string;
     pronouns: string;
     xp: number;
@@ -15,33 +15,33 @@ interface User {
 }
 
 interface Item {
-    _id?: string;
+    _id?: ObjectId;
     name: string;
     img: string;
     type: string;
 }
 
 interface Link {
-    _id?: string;
+    _id?: ObjectId;
     url: string;
     name: string;
 }
 
 interface Chapter {
-    _id?: string;
+    _id?: ObjectId;
     links: Link[];
     description: string;
 }
 
 interface Adventure {
-    _id?: string;
+    _id?: ObjectId;
     chapters: Chapter[];
     description: string;
     name: string;
 }
 
 interface Teacher {
-    _id?: string;
+    _id?: ObjectId;
     username: string;
     realname: string;
     pronouns: string;
@@ -50,6 +50,7 @@ interface Teacher {
 }
 
 interface UserAdventure {
+    _id?: ObjectId;
     base_adventure: string;
     completed: boolean[];
 }
@@ -145,7 +146,7 @@ app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
     console.log(teacher_id);
     const db = client?.db('eduventure');
-    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 
     if (!teacher) {
         res.status(404).send('Teacher not found');
@@ -170,23 +171,23 @@ app.post('/teacher/adventure', async (req, res) => {
     }
 });
 
-app.get('/teacher/adventure/:adventure_id', async (req, res) => {
-    const { adventure_id } = req.params;
-    const { teacher_id } = req.query;
-    const db = client?.db('eduventure');
-    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
+// app.get('/teacher/adventure/:adventure_id', async (req, res) => {
+//     const { adventure_id } = req.params;
+//     const { teacher_id } = req.query;
+//     const db = client?.db('eduventure');
+//     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 
-    if (!teacher) {
-        res.status(404).send('Teacher not found');
-    } else {
-        const adventure = teacher.adventures.find((adv) => adv._id === adventure_id);
-        if (!adventure) {
-            res.status(404).send('Adventure not found');
-        } else {
-            res.send(adventure);
-        }
-    }
-});
+//     if (!teacher) {
+//         res.status(404).send('Teacher not found');
+//     } else {
+//         const adventure = teacher.adventures.find((adv) => adv._id === adventure_id);
+//         if (!adventure) {
+//             res.status(404).send('Adventure not found');
+//         } else {
+//             res.send(adventure);
+//         }
+//     }
+// });
 
 app.post('/teacher/register', async (req, res) => {
     const { username, realname } = req.body;
@@ -207,7 +208,7 @@ app.post('/teacher/register', async (req, res) => {
 app.get('user/:id', async (req, res) => {
     const { id } = req.params;
     const db = client?.db('eduventure');
-    const user = await db?.collection<User>('users').findOne({ _id: id });
+    const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(id) });
 
     if (!user) {
         res.status(404).send('User not found');
@@ -233,7 +234,7 @@ app.post('/user/:id', async (req: any, res: any) => {
 app.get('/teacher/:id', async (req, res) => {
     const { id } = req.params;
     const db = client?.db('eduventure');
-    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: id });
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(id) });
 
     if (!teacher) {
         res.status(404).send('Teacher not found');
@@ -245,13 +246,13 @@ app.get('/teacher/:id', async (req, res) => {
 app.post('/teacher/:id', async (req, res) => {
     const { id } = req.params;
     const db = client?.db('eduventure');
-    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: id });
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(id) });
 
     if (!teacher) {
         res.status(404).send('Teacher not found');
     } else {
         const updatedTeacher = { ...teacher, ...req.body };
-        await db?.collection<Teacher>('teachers').updateOne({ _id: id }, { $set: updatedTeacher });
+        await db?.collection<Teacher>('teachers').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: updatedTeacher });
         res.send(updatedTeacher);
     }
 });
