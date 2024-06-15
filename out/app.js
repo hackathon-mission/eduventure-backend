@@ -71,6 +71,9 @@ app.post('/listing', async (req, res) => {
 app.get('/listings', async (req, res) => {
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const listings = await (db === null || db === void 0 ? void 0 : db.collection('listings').find().toArray());
+    if (!listings) {
+        res.status(404).send('Listings not found');
+    }
     res.send(listings);
 });
 app.get('/listing/:id', async (req, res) => {
@@ -119,11 +122,7 @@ app.post('/register', async (req, res) => {
         username,
         pronouns: '',
         xp: 0,
-        avatar: {
-            name: '',
-            img: '',
-            type: ''
-        },
+        avatar: null,
         presented_items: [],
         user_adventures: [],
         items: []

@@ -10,7 +10,7 @@ interface User {
     username: string;
     pronouns: string;
     xp: number;
-    avatar: Item | null;
+    avatar: ObjectId | null;
     items: ObjectId[];
     presented_items: Item[];
     user_adventures: UserAdventure[];
@@ -151,6 +151,11 @@ app.post('/listing', async (req, res) => {
 app.get('/listings', async (req, res) => {
     const db = client?.db(process.env.DB_NAME);
     const listings = await db?.collection<Listing>('listings').find().toArray();
+
+    if (!listings) {
+        res.status(404).send('Listings not found');
+    }
+
     res.send(listings);
 });
 
@@ -205,11 +210,7 @@ app.post('/register', async (req, res) => {
         username,
         pronouns: '',
         xp: 0,
-        avatar: {
-            name: '',
-            img: '',
-            type: ''
-        },
+        avatar: null,
         presented_items: [],
         user_adventures: [],
         items: []
