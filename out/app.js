@@ -1,6 +1,7 @@
 import express from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import { configDotenv } from 'dotenv';
+import cors from 'cors';
 // helper functions
 const getBaseAdventureSize = async (base_adventure_id) => {
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
@@ -24,11 +25,7 @@ configDotenv();
 const app = express();
 app.use(express.json());
 app.use(express.static('img'));
-app.use(function (req, res, next) {
-    res.setHeader('type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', '104.248.193.0:8080/*');
-    next();
-});
+app.use(cors());
 // mongo init
 const client = process.env.MONGO_URI ? new MongoClient(process.env.MONGO_URI) : null;
 await (client === null || client === void 0 ? void 0 : client.connect());

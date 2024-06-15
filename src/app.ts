@@ -1,6 +1,7 @@
 import express from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import { configDotenv } from 'dotenv';
+import cors from 'cors';
 
 // interfaces
 
@@ -95,12 +96,7 @@ configDotenv();
 const app = express();
 app.use(express.json());
 app.use(express.static('img'));
-
-app.use(function (req, res, next) {
-    res.setHeader('type', 'application/json')
-    res.setHeader('Access-Control-Allow-Origin', '104.248.193.0:8080/*');
-    next();
-});
+app.use(cors());
 
 // mongo init
 
