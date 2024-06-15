@@ -23,6 +23,7 @@ configDotenv();
 // express init
 const app = express();
 app.use(express.json());
+app.use(express.static('img'));
 app.use(function (req, res, next) {
     res.setHeader('type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -31,8 +32,76 @@ app.use(function (req, res, next) {
 // mongo init
 const client = process.env.MONGO_URI ? new MongoClient(process.env.MONGO_URI) : null;
 await (client === null || client === void 0 ? void 0 : client.connect());
+const add_xp = async (user_id, xp) => {
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: user_id }));
+    if (!user) {
+        return;
+    }
+    else {
+        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: user_id }, { $set: { xp: user.xp + xp } }));
+    }
+};
+const transfer_item = async (seller_id, buyer_id, item_id) => {
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const item = await (db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: item_id }));
+    const seller = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: seller_id }));
+    const buyer = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: buyer_id }));
+    if (!item || !seller || !buyer) {
+        return;
+    }
+    else {
+        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: seller_id }, { $set: { items: seller.items.filter((id) => id != item_id) } }));
+        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: buyer_id }, { $set: { items: [...buyer.items, item_id] } }));
+    }
+};
 app.get('/', async (req, res) => {
     res.send("Hello World");
+});
+app.post('/listing', async (req, res) => {
+    const { name, description, item, seller, price } = req.body;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const listing = {
+        name,
+        description,
+        item: ObjectId.createFromHexString(item),
+        seller: ObjectId.createFromHexString(seller),
+        price
+    };
+    await (db === null || db === void 0 ? void 0 : db.collection('listings').insertOne(listing));
+    res.send("success");
+});
+app.get('/listings', async (req, res) => {
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const listings = await (db === null || db === void 0 ? void 0 : db.collection('listings').find().toArray());
+    res.send(listings);
+});
+app.get('/listing/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const listing = await (db === null || db === void 0 ? void 0 : db.collection('listings').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!listing) {
+        res.status(404).send('Listing not found');
+    }
+    else {
+        res.send(listing);
+    }
+});
+app.post('/sell/:id', async (req, res) => {
+    const { id } = req.params;
+    const { ObjectId: buyer } = req.body;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const listing = await (db === null || db === void 0 ? void 0 : db.collection('listings').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!listing) {
+        res.status(404).send('Listing not found');
+    }
+    else {
+        await add_xp(listing.seller, listing.price);
+        await add_xp(buyer, -listing.price);
+        await transfer_item(listing.seller, buyer, listing.item);
+        await (db === null || db === void 0 ? void 0 : db.collection('listings').deleteOne({ _id: ObjectId.createFromHexString(id) }));
+        res.send("success");
+    }
 });
 app.post('/login', async (req, res) => {
     const { username } = req.body;
@@ -59,7 +128,8 @@ app.post('/register', async (req, res) => {
             type: ''
         },
         presented_items: [],
-        user_adventures: []
+        user_adventures: [],
+        items: []
     };
     await (db === null || db === void 0 ? void 0 : db.collection('users').insertOne(user));
     res.send("success");

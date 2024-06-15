@@ -10,8 +10,18 @@ interface User {
     pronouns: string;
     xp: number;
     avatar: Item | null;
+    items: ObjectId[];
     presented_items: Item[];
     user_adventures: UserAdventure[];
+}
+
+interface Listing {
+    _id?: ObjectId;
+    name: string;
+    description: string;
+    item: ObjectId
+    seller: ObjectId;
+    price: number;
 }
 
 interface Item {
@@ -84,6 +94,7 @@ configDotenv();
 
 const app = express();
 app.use(express.json());
+app.use(express.static('img'));
 
 app.use(function (req, res, next) {
     res.setHeader('type', 'application/json')
@@ -97,9 +108,85 @@ app.use(function (req, res, next) {
 const client = process.env.MONGO_URI ? new MongoClient(process.env.MONGO_URI) : null;
 await client?.connect();
 
+const add_xp = async (user_id: ObjectId, xp: number) => {
+    const db = client?.db(process.env.DB_NAME);
+    const user = await db?.collection<User>('users').findOne({ _id: user_id });
+
+    if (!user) {
+        return;
+    } else {
+        await db?.collection<User>('users').updateOne({ _id: user_id }, { $set: { xp: user.xp + xp } });
+    }
+};
+
+const transfer_item = async (seller_id: ObjectId, buyer_id: ObjectId, item_id: ObjectId) => {
+    const db = client?.db(process.env.DB_NAME);
+    const item = await db?.collection<Item>('items').findOne({ _id: item_id });
+    const seller = await db?.collection<User>('users').findOne({ _id: seller_id });
+    const buyer = await db?.collection<User>('users').findOne({ _id: buyer_id });
+
+    if (!item || !seller || !buyer) {
+        return;
+    } else {
+        await db?.collection<User>('users').updateOne({ _id: seller_id }, { $set: { items: seller.items.filter((id) => id != item_id) } });
+        await db?.collection<User>('users').updateOne({ _id: buyer_id }, { $set: { items: [...buyer.items, item_id] } });
+    }
+}
+
 app.get('/', async (req, res) => {
     res.send("Hello World");
 });
+
+app.post('/listing', async (req, res) => {
+    const { name, description, item, seller, price } = req.body;
+    const db = client?.db(process.env.DB_NAME);
+    const listing: Listing = {
+        name,
+        description,
+        item: ObjectId.createFromHexString(item),
+        seller: ObjectId.createFromHexString(seller),
+        price
+    }
+
+    await db?.collection<Listing>('listings').insertOne(listing);
+
+    res.send("success");
+});
+
+app.get('/listings', async (req, res) => {
+    const db = client?.db(process.env.DB_NAME);
+    const listings = await db?.collection<Listing>('listings').find().toArray();
+    res.send(listings);
+});
+
+app.get('/listing/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const listing = await db?.collection<Listing>('listings').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!listing) {
+        res.status(404).send('Listing not found');
+    } else {
+        res.send(listing);
+    }
+});
+
+app.post('/sell/:id', async (req, res) => {
+    const { id } = req.params;
+    const { ObjectId: buyer } = req.body;
+    const db = client?.db(process.env.DB_NAME);
+    const listing = await db?.collection<Listing>('listings').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!listing) {
+        res.status(404).send('Listing not found');
+    } else {
+        await add_xp(listing.seller, listing.price);
+        await add_xp(buyer, -listing.price);
+        await transfer_item(listing.seller, buyer, listing.item);
+        await db?.collection<Listing>('listings').deleteOne({ _id: ObjectId.createFromHexString(id) });
+        res.send("success");
+    }
+})
 
 app.post('/login', async (req, res) => {
     const { username } = req.body;
@@ -129,7 +216,8 @@ app.post('/register', async (req, res) => {
             type: ''
         },
         presented_items: [],
-        user_adventures: []
+        user_adventures: [],
+        items: []
     }
 
     await db?.collection<User>('users').insertOne(user);
