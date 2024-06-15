@@ -261,7 +261,7 @@ app.post('/user_adventure/', async (req, res) => {
         res.status(404).send('User not found');
     } else {
         console.log(base_adventure_id)
-        console.log(user.user_adventures[0]._id)
+        console.log(user.user_adventures[0].base_adventure_id)
 
         let user_adventure_index = -1;
         for (let i = 0; i < user.user_adventures.length; i++) {
