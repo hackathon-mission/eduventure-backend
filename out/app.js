@@ -5,6 +5,7 @@ import { configDotenv } from 'dotenv';
 const getBaseAdventureSize = async (base_adventure_id) => {
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const base_adventure = await (db === null || db === void 0 ? void 0 : db.collection('adventures').findOne({ _id: ObjectId.createFromHexString(base_adventure_id) }));
+    console.log(base_adventure);
     if (!base_adventure) {
         return 0;
     }
