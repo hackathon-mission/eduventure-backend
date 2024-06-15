@@ -182,6 +182,21 @@ app.delete('/adventure/:id', async (req, res) => {
         res.send("success");
     }
 });
+app.post('/user_adventure/:id', async (req, res) => {
+    const { id } = req.params;
+    const { number: index, boolean: completed } = req.body;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const user = await (db === null || db === void 0 ? void 0 : db.collection('user_adventures').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!user) {
+        res.status(404).send('User Adventure not found');
+    }
+    else {
+        let new_completed = user.completed;
+        new_completed[index] = completed;
+        await (db === null || db === void 0 ? void 0 : db.collection('user_adventures').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { completed: new_completed } }));
+        res.send("success");
+    }
+});
 app.post('/make_user_adventure', async (req, res) => {
     const { user_id, base_adventure_id } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
@@ -195,8 +210,13 @@ app.post('/make_user_adventure', async (req, res) => {
             base_adventure_id: ObjectId.createFromHexString(base_adventure_id),
             completed: new Array(base_adventure_size).fill(false)
         };
-        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: [...user.user_adventures, user_adventure] } }));
-        res.send("success");
+        const inserted = await (db === null || db === void 0 ? void 0 : db.collection('user_adventures').insertOne(user_adventure));
+        if (inserted) {
+            await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: [...user.user_adventures, inserted === null || inserted === void 0 ? void 0 : inserted.insertedId] } }));
+            res.send("success");
+            return;
+        }
+        res.status(500).send("Error creating user adventure");
     }
 });
 app.post('/teacher/:id', async (req, res) => {
