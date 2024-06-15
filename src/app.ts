@@ -279,6 +279,18 @@ app.post('/user_adventure/', async (req, res) => {
     }
 });
 
+app.get('/adventure/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const adventure = await db?.collection<Adventure>('adventures').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!adventure) {
+        res.status(404).send('Adventure not found');
+    } else {
+        res.send(adventure);
+    }
+});
+
 app.post('/make_user_adventure', async (req, res) => {
     const { user_id, base_adventure_id } = req.body;
     const db = client?.db(process.env.DB_NAME);
