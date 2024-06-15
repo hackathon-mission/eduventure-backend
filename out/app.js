@@ -24,6 +24,7 @@ const app = express();
 app.use(express.json());
 app.use(function (req, res, next) {
     res.setHeader('type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     next();
 });
 // mongo init
