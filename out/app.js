@@ -22,6 +22,10 @@ configDotenv();
 // express init
 const app = express();
 app.use(express.json());
+app.use(function (req, res, next) {
+    res.setHeader('type', 'application/json');
+    next();
+});
 // mongo init
 const client = process.env.MONGO_URI ? new MongoClient(process.env.MONGO_URI) : null;
 await (client === null || client === void 0 ? void 0 : client.connect());
@@ -170,33 +174,31 @@ app.delete('/adventure/:id', async (req, res) => {
         res.send("success");
     }
 });
-app.post('/user_adventure/', async (req, res) => {
-    const { number: index, boolean: completed, base_adventure_id, user_id } = req.body;
-    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
-    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(user_id) }));
-    if (!user) {
-        res.status(404).send('User not found');
-    }
-    else {
-        console.log(ObjectId.createFromHexString(base_adventure_id).equals(user.user_adventures[0].base_adventure_id));
-        let user_adventure_index = -1;
-        for (let i = 0; i < user.user_adventures.length; i++) {
-            console.log(user.user_adventures[i]);
-            if (user.user_adventures[i].base_adventure_id.equals(ObjectId.createFromHexString(base_adventure_id))) {
-                user_adventure_index = i;
-                break;
-            }
-        }
-        if (user_adventure_index = -1) {
-            res.status(404).send('User adventure not found');
-        }
-        else {
-            user.user_adventures[user_adventure_index].completed[index] = completed;
-            await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: user.user_adventures } }));
-            res.send("success");
-        }
-    }
-});
+// app.post('/user_adventure/', async (req, res) => {
+//     const { number: index, boolean: completed, base_adventure_id, user_id } = req.body;
+//     const db = client?.db(process.env.DB_NAME);
+//     const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(user_id) });
+//     if (!user) {
+//         res.status(404).send('User not found');
+//     } else {
+//         console.log(ObjectId.createFromHexString(base_adventure_id).equals(user.user_adventures[0].base_adventure_id))
+//         let user_adventure_index = -1;
+//         for (let i = 0; i < user.user_adventures.length; i++) {
+//             console.log(user.user_adventures[i].base_adventure_id));
+// if (user.user_adventures[i].base_adventure_id.equals(ObjectId.createFromHexString(base_adventure_id))) {
+//     user_adventure_index = i;
+//     break;
+// }
+//         }
+// if (user_adventure_index = -1) {
+//     res.status(404).send('User adventure not found');
+// } else {
+//     user.user_adventures[user_adventure_index].completed[index] = completed;
+//     await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: user.user_adventures } });
+//     res.send("success");
+// }
+//     }
+// });
 app.get('/adventure/:id', async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
