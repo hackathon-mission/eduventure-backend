@@ -256,6 +256,19 @@ app.get('/teacher/:id', async (req, res) => {
     }
 });
 
+app.delete('/adventure/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const adventure = await db?.collection<Adventure>('adventures').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!adventure) {
+        res.status(404).send('Adventure not found');
+    } else {
+        await db?.collection<Adventure>('adventures').deleteOne({ _id: ObjectId.createFromHexString(id) });
+        res.send("success");
+    }
+});
+
 app.post('/make_user_adventure', async (req, res) => {
     const { user_id, base_adventure_id } = req.body;
     const db = client?.db(process.env.DB_NAME);
