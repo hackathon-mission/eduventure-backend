@@ -185,7 +185,7 @@ app.post('/user_adventure/', async (req, res) => {
     }
     else {
         for (let i = 0; i < user.user_adventures.length; i++) {
-            console.log("tests1");
+            console.log(user.user_adventures[i].index);
             if (user.user_adventures[i].index == adventure_index) {
                 user.user_adventures[i].completed[completed_index] = completed;
                 console.log("tests");
