@@ -265,7 +265,7 @@ app.post('/user_adventure/', async (req, res) => {
 
         let user_adventure_index = -1;
         for (let i = 0; i < user.user_adventures.length; i++) {
-            if (user.user_adventures[i].base_adventure_id === ObjectId.createFromHexString(base_adventure_id)) {
+            if (user.user_adventures[i].base_adventure_id.equals(ObjectId.createFromHexString(base_adventure_id))) {
                 user_adventure_index = i;
                 break;
             }
