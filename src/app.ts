@@ -98,7 +98,7 @@ app.use(express.static('img'));
 
 app.use(function (req, res, next) {
     res.setHeader('type', 'application/json')
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', '104.248.193.0:3000');
     next();
 });
 
