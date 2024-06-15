@@ -241,6 +241,17 @@ app.get('/teacher/:id', async (req, res) => {
     }
 });
 
+app.get('users', async (req, res) => {
+    const db = client?.db('eduventure');
+    const users = await db?.collection<User>('users').find();
+
+    if (!users) {
+        res.status(404).send('User not found');
+    } else {
+        res.send(users);
+    }
+});
+
 app.post('/teacher/:id', async (req, res) => {
     const { id } = req.params;
     const db = client?.db('eduventure');
