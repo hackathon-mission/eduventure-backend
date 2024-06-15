@@ -189,6 +189,12 @@ app.post('/teacher/register', async (req, res) => {
     res.send("success");
 });
 
+app.get('/users', async (req, res) => {
+    const db = client?.db(process.env.DB_NAME);
+    const users = await db?.collection<User>('users').find().toArray();
+    res.send(users);
+});
+
 app.get('user/:id', async (req, res) => {
     const { id } = req.params;
     const db = client?.db(process.env.DB_NAME);
