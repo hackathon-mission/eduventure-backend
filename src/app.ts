@@ -35,7 +35,7 @@ interface Chapter {
 
 interface Adventure {
     _id?: ObjectId;
-    chapters: ObjectId[];
+    chapters: Chapter[];
     description: string;
     name: string;
 }
@@ -66,28 +66,11 @@ const getBaseAdventureSize = async (base_adventure_id: string): Promise<number> 
     } else {
         let size = 0;
         for (let i = 0; i < base_adventure.chapters.length; i++) {
-            size += (await db?.collection<Chapter>('chapters').findOne({ _id: base_adventure.chapters[i] }))?.links.length || 0;
+            console.log(base_adventure.chapters[i]);
+            size += base_adventure.chapters[i].links.length;
         }
         return size;
     }
-}
-
-
-
-let teacherExists = (username: string): boolean => {
-    const db = client?.db(process.env.DB_NAME);
-    const teacher = db?.collection<Teacher>('teachers').findOne({ username });
-
-    return teacher ? true : false;
-}
-
-let userExists = (username: string): boolean => {
-    const db = client?.db(process.env.DB_NAME);
-    const user = db?.collection<User>('users').findOne({
-        username
-    });
-
-    return user ? true : false;
 }
 
 // dotenv init

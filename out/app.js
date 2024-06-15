@@ -3,7 +3,6 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { configDotenv } from 'dotenv';
 // helper functions
 const getBaseAdventureSize = async (base_adventure_id) => {
-    var _a;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const base_adventure = await (db === null || db === void 0 ? void 0 : db.collection('adventures').findOne({ _id: ObjectId.createFromHexString(base_adventure_id) }));
     if (!base_adventure) {
@@ -12,22 +11,11 @@ const getBaseAdventureSize = async (base_adventure_id) => {
     else {
         let size = 0;
         for (let i = 0; i < base_adventure.chapters.length; i++) {
-            size += ((_a = (await (db === null || db === void 0 ? void 0 : db.collection('chapters').findOne({ _id: base_adventure.chapters[i] })))) === null || _a === void 0 ? void 0 : _a.links.length) || 0;
+            console.log(base_adventure.chapters[i]);
+            size += base_adventure.chapters[i].links.length;
         }
         return size;
     }
-};
-let teacherExists = (username) => {
-    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
-    const teacher = db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ username });
-    return teacher ? true : false;
-};
-let userExists = (username) => {
-    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
-    const user = db === null || db === void 0 ? void 0 : db.collection('users').findOne({
-        username
-    });
-    return user ? true : false;
 };
 // dotenv init
 configDotenv();
