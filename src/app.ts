@@ -263,7 +263,7 @@ app.delete('/adventure/:id', async (req, res) => {
 });
 
 app.post('/user_adventure/', async (req, res) => {
-    const { number: adventure_index, number: completed_index, boolean: completed, user_id } = req.body;
+    const { adventure_index, completed_index, completed, user_id } = req.body;
     const db = client?.db(process.env.DB_NAME);
     const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(user_id) });
 
