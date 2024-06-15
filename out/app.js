@@ -12,6 +12,6 @@ await (client === null || client === void 0 ? void 0 : client.connect());
 app.get('/', async (req, res) => {
     res.send("Hello World");
 });
-app.listen(process.env.port, () => {
+app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
 });
