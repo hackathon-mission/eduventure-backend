@@ -177,6 +177,19 @@ app.post('/teacher/adventure', async (req, res) => {
 //     }
 // });
 
+app.get('/teacher/adventures/:teacher_id', async (req, res) => {
+    const { teacher_id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
+
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        const adventures = await db?.collection<Adventure>('adventures').find({ _id: { $in: teacher.adventures } }).toArray();
+        res.send(adventures);
+    }
+});
+
 app.post('/teacher/register', async (req, res) => {
     const { username, realname } = req.body;
     const db = client?.db(process.env.DB_NAME);
