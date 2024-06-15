@@ -271,7 +271,7 @@ app.post('/user_adventure/', async (req, res) => {
         res.status(404).send('User not found');
     } else {
         for (let i = 0; i < user.user_adventures.length; i++) {
-            if (user.user_adventures[i].index === adventure_index) {
+            if (user.user_adventures[i].index == adventure_index) {
                 user.user_adventures[i].completed[completed_index] = completed;
                 console.log("tests");
                 break;
