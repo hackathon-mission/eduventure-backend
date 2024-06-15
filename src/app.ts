@@ -12,7 +12,7 @@ interface User {
     xp: number;
     avatar: ObjectId | null;
     items: ObjectId[];
-    presented_items: Item[];
+    presented_items: ObjectId[];
     user_adventures: UserAdventure[];
 }
 
