@@ -35,7 +35,7 @@ interface Chapter {
 
 interface Adventure {
     _id?: ObjectId;
-    chapters: Chapter[];
+    chapters: ObjectId[];
     description: string;
     name: string;
 }
@@ -51,11 +51,26 @@ interface Teacher {
 
 interface UserAdventure {
     _id?: ObjectId;
-    base_adventure: string;
+    base_adventure_id: ObjectId;
     completed: boolean[];
 }
 
 // helper functions
+
+const getBaseAdventureSize = async (base_adventure_id: string): Promise<number> => {
+    const db = client?.db(process.env.DB_NAME);
+    const base_adventure = await db?.collection<Adventure>('adventures').findOne({ _id: ObjectId.createFromHexString(base_adventure_id) });
+
+    if (!base_adventure) {
+        return 0;
+    } else {
+        let size = 0;
+        for (let i = 0; i < base_adventure.chapters.length; i++) {
+            size += (await db?.collection<Chapter>('chapters').findOne({ _id: base_adventure.chapters[i] }))?.links.length || 0;
+        }
+        return size;
+    }
+}
 
 let teacherExists = (username: string): boolean => {
     const db = client?.db(process.env.DB_NAME);
@@ -230,6 +245,25 @@ app.get('/teacher/:id', async (req, res) => {
         res.status(404).send('Teacher not found');
     } else {
         res.send(teacher);
+    }
+});
+
+app.post('/make_user_adventure', async (req, res) => {
+    const { user_id, base_adventure_id } = req.body;
+    const db = client?.db(process.env.DB_NAME);
+    const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(user_id) });
+
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        const base_adventure_size = await getBaseAdventureSize(base_adventure_id);
+        const user_adventure: UserAdventure = {
+            base_adventure_id: ObjectId.createFromHexString(base_adventure_id),
+            completed: new Array(base_adventure_size).fill(false)
+        }
+
+        await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: [...user.user_adventures, user_adventure] } });
+        res.send("success");
     }
 });
 

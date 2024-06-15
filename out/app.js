@@ -2,6 +2,21 @@ import express from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import { configDotenv } from 'dotenv';
 // helper functions
+const getBaseAdventureSize = async (base_adventure_id) => {
+    var _a;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const base_adventure = await (db === null || db === void 0 ? void 0 : db.collection('adventures').findOne({ _id: ObjectId.createFromHexString(base_adventure_id) }));
+    if (!base_adventure) {
+        return 0;
+    }
+    else {
+        let size = 0;
+        for (let i = 0; i < base_adventure.chapters.length; i++) {
+            size += ((_a = (await (db === null || db === void 0 ? void 0 : db.collection('chapters').findOne({ _id: base_adventure.chapters[i] })))) === null || _a === void 0 ? void 0 : _a.links.length) || 0;
+        }
+        return size;
+    }
+};
 let teacherExists = (username) => {
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const teacher = db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ username });
@@ -148,6 +163,23 @@ app.get('/teacher/:id', async (req, res) => {
     }
     else {
         res.send(teacher);
+    }
+});
+app.post('/make_user_adventure', async (req, res) => {
+    const { user_id, base_adventure_id } = req.body;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(user_id) }));
+    if (!user) {
+        res.status(404).send('User not found');
+    }
+    else {
+        const base_adventure_size = await getBaseAdventureSize(base_adventure_id);
+        const user_adventure = {
+            base_adventure_id: ObjectId.createFromHexString(base_adventure_id),
+            completed: new Array(base_adventure_size).fill(false)
+        };
+        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: [...user.user_adventures, user_adventure] } }));
+        res.send("success");
     }
 });
 app.post('/teacher/:id', async (req, res) => {
