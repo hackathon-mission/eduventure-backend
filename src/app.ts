@@ -42,6 +42,8 @@ app.post('/login', async (req, res) => {
     const { username } = req.body;
     const db = client?.db('users');
 
+    console.log(username);
+
     const user: User | undefined | null = await db?.collection('users').findOne<User>({ username });
 
     if (!user) {

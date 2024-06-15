@@ -15,6 +15,7 @@ app.get('/', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { username } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db('users');
+    console.log(username);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ username }));
     if (!user) {
         res.status(404).send('User not found');
