@@ -52,6 +52,7 @@ interface Teacher {
 interface UserAdventure {
     _id?: ObjectId;
     base_adventure_id: ObjectId;
+    index: number;
     completed: boolean[];
 }
 
@@ -259,34 +260,24 @@ app.delete('/adventure/:id', async (req, res) => {
     }
 });
 
-// app.post('/user_adventure/', async (req, res) => {
-//     const { number: index, boolean: completed, base_adventure_id, user_id } = req.body;
-//     const db = client?.db(process.env.DB_NAME);
-//     const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(user_id) });
+app.post('/user_adventure/', async (req, res) => {
+    const { number: adventure_index, number: completed_index, boolean: completed, user_id } = req.body;
+    const db = client?.db(process.env.DB_NAME);
+    const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(user_id) });
 
-//     if (!user) {
-//         res.status(404).send('User not found');
-//     } else {
-//         console.log(ObjectId.createFromHexString(base_adventure_id).equals(user.user_adventures[0].base_adventure_id))
-
-//         let user_adventure_index = -1;
-//         for (let i = 0; i < user.user_adventures.length; i++) {
-//             console.log(user.user_adventures[i].base_adventure_id));
-// if (user.user_adventures[i].base_adventure_id.equals(ObjectId.createFromHexString(base_adventure_id))) {
-//     user_adventure_index = i;
-//     break;
-// }
-//         }
-
-// if (user_adventure_index = -1) {
-//     res.status(404).send('User adventure not found');
-// } else {
-//     user.user_adventures[user_adventure_index].completed[index] = completed;
-//     await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: user.user_adventures } });
-//     res.send("success");
-// }
-//     }
-// });
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        for (let i = 0; i < user.user_adventures.length; i++) {
+            if (user.user_adventures[i].index === adventure_index) {
+                user.user_adventures[i].completed[completed_index] = completed;
+                break;
+            }
+        }
+        await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: user.user_adventures } });
+        res.send("success");
+    }
+});
 
 app.get('/adventure/:id', async (req, res) => {
     const { id } = req.params;
@@ -313,7 +304,8 @@ app.post('/make_user_adventure', async (req, res) => {
         console.log(base_adventure_size);
         const user_adventure: UserAdventure = {
             base_adventure_id: ObjectId.createFromHexString(base_adventure_id),
-            completed: new Array(base_adventure_size).fill(false)
+            completed: new Array(base_adventure_size).fill(false),
+            index: user.user_adventures.length
         }
 
         await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: [...user.user_adventures, user_adventure] } });
