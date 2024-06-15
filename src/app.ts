@@ -11,7 +11,7 @@ interface User {
     xp: number;
     avatar: Item | null;
     presented_items: Item[];
-    user_adventures: ObjectId[];
+    user_adventures: UserAdventure[];
 }
 
 interface Item {
@@ -269,19 +269,23 @@ app.delete('/adventure/:id', async (req, res) => {
     }
 });
 
-app.post('/user_adventure/:id', async (req, res) => {
-    const { id } = req.params;
-    const { number: index, boolean: completed } = req.body;
+app.post('/user_adventure/', async (req, res) => {
+    const { number: index, boolean: completed, base_adventure_id, user_id } = req.body;
     const db = client?.db(process.env.DB_NAME);
-    const user = await db?.collection<UserAdventure>('user_adventures').findOne({ _id: ObjectId.createFromHexString(id) });
+    const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(user_id) });
 
     if (!user) {
-        res.status(404).send('User Adventure not found');
+        res.status(404).send('User not found');
     } else {
-        let new_completed = user.completed;
-        new_completed[index] = completed;
-        await db?.collection<UserAdventure>('user_adventures').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { completed: new_completed } });
-        res.send("success");
+        const user_adventure = user.user_adventures.find((user_adventure) => user_adventure.base_adventure_id.equals(ObjectId.createFromHexString(base_adventure_id)));
+
+        if (!user_adventure) {
+            res.status(404).send('User adventure not found');
+        } else {
+            user_adventure.completed[index] = completed;
+            await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: user.user_adventures } });
+            res.send("success");
+        }
     }
 });
 
@@ -299,14 +303,8 @@ app.post('/make_user_adventure', async (req, res) => {
             completed: new Array(base_adventure_size).fill(false)
         }
 
-        const inserted = await db?.collection<UserAdventure>('user_adventures').insertOne(user_adventure);
-
-        if (inserted) {
-            await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: [...user.user_adventures, inserted?.insertedId] } });
-            res.send("success");
-            return;
-        }
-        res.status(500).send("Error creating user adventure");
+        await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: [...user.user_adventures, user_adventure] } });
+        res.send("success");
     }
 });
 
