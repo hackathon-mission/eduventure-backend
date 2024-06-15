@@ -181,6 +181,7 @@ app.post('/user_adventure/', async (req, res) => {
         console.log(ObjectId.createFromHexString(base_adventure_id).equals(user.user_adventures[0].base_adventure_id));
         let user_adventure_index = -1;
         for (let i = 0; i < user.user_adventures.length; i++) {
+            console.log(user.user_adventures[i]);
             if (user.user_adventures[i].base_adventure_id.equals(ObjectId.createFromHexString(base_adventure_id))) {
                 user_adventure_index = i;
                 break;
