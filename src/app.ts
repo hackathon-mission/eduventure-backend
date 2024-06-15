@@ -145,7 +145,7 @@ app.post('/teacher/login', async (req, res) => {
 app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
     const db = client?.db(process.env.DB_NAME);
-    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 
     if (!teacher) {
         res.status(404).send('Teacher not found');
