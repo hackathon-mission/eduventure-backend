@@ -178,12 +178,18 @@ app.post('/user_adventure/', async (req, res) => {
         res.status(404).send('User not found');
     }
     else {
-        const user_adventure = user.user_adventures.find((user_adventure) => user_adventure.base_adventure_id.equals(ObjectId.createFromHexString(base_adventure_id)));
-        if (!user_adventure) {
+        let user_adventure_index = -1;
+        for (let i = 0; i < user.user_adventures.length; i++) {
+            if (user.user_adventures[i].base_adventure_id.equals(base_adventure_id)) {
+                user_adventure_index = i;
+                break;
+            }
+        }
+        if (user_adventure_index = -1) {
             res.status(404).send('User adventure not found');
         }
         else {
-            user_adventure.completed[index] = completed;
+            user.user_adventures[user_adventure_index].completed[index] = completed;
             await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(user_id) }, { $set: { user_adventures: user.user_adventures } }));
             res.send("success");
         }
