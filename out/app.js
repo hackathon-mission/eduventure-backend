@@ -24,9 +24,20 @@ app.post('/login', async (req, res) => {
     }
 });
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db('users');
-    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').insertOne({ username }));
+    const user = {
+        username,
+        pronouns: '',
+        xp: 0,
+        avatar: {
+            name: '',
+            img: '',
+            type: ''
+        },
+        presented_items: []
+    };
+    await (db === null || db === void 0 ? void 0 : db.collection('users').insertOne({ user }));
     res.send("success");
 });
 app.listen(process.env.PORT, () => {
