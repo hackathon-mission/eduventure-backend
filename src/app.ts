@@ -102,7 +102,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-
 // mongo init
 
 const client = process.env.MONGO_URI ? new MongoClient(process.env.MONGO_URI) : null;
@@ -173,7 +172,7 @@ app.get('/listing/:id', async (req, res) => {
 
 app.post('/sell/:id', async (req, res) => {
     const { id } = req.params;
-    const { string: buyer } = req.body;
+    const { buyer } = req.body;
     const db = client?.db(process.env.DB_NAME);
     const listing = await db?.collection<Listing>('listings').findOne({ _id: ObjectId.createFromHexString(id) });
 

@@ -89,7 +89,7 @@ app.get('/listing/:id', async (req, res) => {
 });
 app.post('/sell/:id', async (req, res) => {
     const { id } = req.params;
-    const { string: buyer } = req.body;
+    const { buyer } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const listing = await (db === null || db === void 0 ? void 0 : db.collection('listings').findOne({ _id: ObjectId.createFromHexString(id) }));
     if (!listing) {
