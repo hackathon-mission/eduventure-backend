@@ -247,6 +247,7 @@ app.get('users', async (req, res) => {
         res.status(500).send('Unable to fetch users!');
     } else {
         res.send(users);
+    }
     
 });
 
