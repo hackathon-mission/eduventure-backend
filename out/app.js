@@ -180,7 +180,7 @@ app.post('/user_adventure/', async (req, res) => {
     else {
         let user_adventure_index = -1;
         for (let i = 0; i < user.user_adventures.length; i++) {
-            if (user.user_adventures[i].base_adventure_id.equals(base_adventure_id)) {
+            if (user.user_adventures[i].base_adventure_id === base_adventure_id) {
                 user_adventure_index = i;
                 break;
             }
