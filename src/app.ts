@@ -157,18 +157,23 @@ app.post('/teacher/adventure', async (req, res) => {
     }
 });
 
-// app.post('/teacher/adventure', async (req, res) => {
-//     const { teacher_id, adventure } = req.body;
-//     const db = client?.db('eduventure');
-//     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
+app.post('/teacher/adventure', async (req, res) => {
+    const { teacher_id, adventure } = req.body;
+    const db = client?.db('eduventure');
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
 
-//     if (!teacher) {
-//         res.status(404).send('Teacher not found');
-//     } else {
-//         await db?.collection<Adventure>('adventures').insertOne(adventure);
-//         await 
-//     }
-// });
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        const adventure_entry = await db?.collection<Adventure>('adventures').insertOne(adventure);
+        if (!adventure_entry) {
+            res.status(500).send('Error creating adventure');
+        } else {
+            await db?.collection<Teacher>("teachers").updateOne({ _id: teacher_id }, { $set: { adventures: [...teacher.adventures, adventure_entry.insertedId] } });
+            res.send("success");
+        }
+    }
+});
 
 // app.get('/teacher/adventure/:teacher_id/:adventure_id', async (req, res) => {
 //     const { adventure_id, teacher_id } = req.params;
