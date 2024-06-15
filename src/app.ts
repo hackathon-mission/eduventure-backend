@@ -194,7 +194,7 @@ app.post('/login', async (req, res) => {
     if (!user) {
         res.status(404).send('User not found');
     } else {
-        res.send({ user_id: user._id });
+        res.send(user);
     }
 });
 
@@ -231,7 +231,7 @@ app.post('/teacher/login', async (req, res) => {
     if (!teacher) {
         res.status(404).send('Teacher not found');
     } else {
-        res.send({ teacher_id: teacher._id });
+        res.send(teacher);
     }
 });
 

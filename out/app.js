@@ -109,7 +109,7 @@ app.post('/login', async (req, res) => {
         res.status(404).send('User not found');
     }
     else {
-        res.send({ user_id: user._id });
+        res.send(user);
     }
 });
 app.post('/register', async (req, res) => {
@@ -140,7 +140,7 @@ app.post('/teacher/login', async (req, res) => {
         res.status(404).send('Teacher not found');
     }
     else {
-        res.send({ teacher_id: teacher._id });
+        res.send(teacher);
     }
 });
 app.post('/teacher/adventure', async (req, res) => {
