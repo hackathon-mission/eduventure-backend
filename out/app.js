@@ -178,6 +178,7 @@ app.post('/user_adventure/', async (req, res) => {
         res.status(404).send('User not found');
     }
     else {
+        console.log(user.user_adventures);
         let user_adventure_index = -1;
         for (let i = 0; i < user.user_adventures.length; i++) {
             if (user.user_adventures[i].base_adventure_id.id === base_adventure_id.id) {
