@@ -171,9 +171,8 @@ app.post('/teacher/adventure', async (req, res) => {
     }
 });
 
-app.get('/teacher/adventure/:adventure_id', async (req, res) => {
-    const { adventure_id } = req.params;
-    const { teacher_id } = req.cookies;
+app.get('/teacher/adventure/:teacher_id/:adventure_id', async (req, res) => {
+    const { adventure_id, teacher_id } = req.params;
     const db = client?.db('eduventure');
     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 
