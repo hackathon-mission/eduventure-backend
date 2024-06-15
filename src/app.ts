@@ -11,6 +11,7 @@ interface User {
     xp: number;
     avatar: Item | null;
     presented_items: Item[];
+    user_adventures: UserAdventure[];
 }
 
 interface Item {
@@ -18,6 +19,56 @@ interface Item {
     name: string;
     img: string;
     type: string;
+}
+
+interface Link {
+    _id?: string;
+    url: string;
+    name: string;
+}
+
+interface Chapter {
+    _id?: string;
+    links: Link[];
+    description: string;
+}
+
+interface Adventure {
+    _id?: string;
+    chapters: Chapter[];
+    description: string;
+}
+
+interface Teacher {
+    _id?: string;
+    username: string;
+    realname: string;
+    pronouns: string;
+    avatar: string | null;
+    adventures: Adventure[];
+}
+
+interface UserAdventure {
+    base_adventure: string;
+    completed: boolean[];
+}
+
+// helper functions
+
+let teacherExists = (username: string): boolean => {
+    const db = client?.db('eduventure');
+    const teacher = db?.collection<Teacher>('teachers').findOne({ username });
+
+    return teacher ? true : false;
+}
+
+let userExists = (username: string): boolean => {
+    const db = client?.db('eduventure');
+    const user = db?.collection<User>('users').findOne({
+        username
+    });
+
+    return user ? true : false;
 }
 
 // dotenv init
@@ -65,13 +116,145 @@ app.post('/register', async (req, res) => {
             img: '',
             type: ''
         },
-        presented_items: []
+        presented_items: [],
+        user_adventures: []
     }
 
     await db?.collection<User>('users').insertOne(user);
 
     res.send("success");
 });
+
+app.post('/teacher/login', async (req, res) => {
+    const { username } = req.body;
+    const db = client?.db('eduventure');
+
+    console.log(username);
+
+    const teacher: Teacher | undefined | null = await db?.collection('teachers').findOne<Teacher>({ username });
+
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        res.send(teacher._id);
+    }
+});
+
+app.post('/teacher/adventure', async (req, res) => {
+    const { teacher_id, adventure } = req.body;
+    const db = client?.db('eduventure');
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
+
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        const updatedTeacher = { ...teacher, adventures: [...teacher.adventures, adventure] };
+        await db?.collection<Teacher>('teachers').updateOne({ _id: teacher_id }, { $set: updatedTeacher });
+        res.send(updatedTeacher);
+    }
+});
+
+app.post('/teacher/adventure', async (req, res) => {
+    const { teacher_id, adventure } = req.body;
+    const db = client?.db('eduventure');
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
+
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        const updatedTeacher = { ...teacher, adventures: [...teacher.adventures, adventure] };
+        await db?.collection<Teacher>('teachers').updateOne({ _id: teacher_id }, { $set: updatedTeacher });
+        res.send(updatedTeacher);
+    }
+});
+
+app.get('/teacher/adventure/:adventure_id', async (req, res) => {
+    const { adventure_id } = req.params;
+    const { teacher_id } = req.query;
+    const db = client?.db('eduventure');
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
+
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        const adventure = teacher.adventures.find((adv) => adv._id === adventure_id);
+        if (!adventure) {
+            res.status(404).send('Adventure not found');
+        } else {
+            res.send(adventure);
+        }
+    }
+});
+
+app.post('/teacher/register', async (req, res) => {
+    const { username, realname } = req.body;
+    const db = client?.db('eduventure');
+    const teacher: Teacher = {
+        username,
+        realname,
+        pronouns: '',
+        avatar: '',
+        adventures: []
+    }
+
+    await db?.collection<Teacher>('teachers').insertOne(teacher);
+
+    res.send("success");
+});
+
+app.get('user/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db('eduventure');
+    const user = await db?.collection<User>('users').findOne({ _id: id });
+
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        res.send(user);
+    }
+});
+
+app.post('/user/:id', async (req: any, res: any) => {
+    const { id } = req.params;
+    const db = client?.db('eduventure');
+    const user = await db?.collection<User>('users').findOne({ _id: id });
+
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        const updatedUser = { ...user, ...req.body };
+        await db?.collection<User>('users').updateOne({ _id: id }, { $set: updatedUser });
+        res.send(updatedUser);
+    }
+});
+
+app.get('/teacher/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db('eduventure');
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: id });
+
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        res.send(teacher);
+    }
+});
+
+app.post('/teacher/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db('eduventure');
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: id });
+
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        const updatedTeacher = { ...teacher, ...req.body };
+        await db?.collection<Teacher>('teachers').updateOne({ _id: id }, { $set: updatedTeacher });
+        res.send(updatedTeacher);
+    }
+});
+
+
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
