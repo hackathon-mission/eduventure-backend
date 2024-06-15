@@ -154,7 +154,7 @@ app.post('/teacher/adventure', async (req, res) => {
         if (!adventure_entry) {
             res.status(500).send('Error creating adventure');
         } else {
-            await db?.collection<Teacher>("teachers").updateOne({ _id: teacher_id }, { $set: { adventures: [...teacher.adventures, adventure_entry.insertedId] } });
+            await db?.collection<Teacher>("teachers").updateOne({ _id: ObjectId.createFromHexString(teacher_id) }, { $set: { adventures: [...teacher.adventures, adventure_entry.insertedId] } });
             res.send("success");
         }
     }

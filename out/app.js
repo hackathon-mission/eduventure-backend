@@ -80,7 +80,7 @@ app.post('/teacher/adventure', async (req, res) => {
             res.status(500).send('Error creating adventure');
         }
         else {
-            await (db === null || db === void 0 ? void 0 : db.collection("teachers").updateOne({ _id: teacher_id }, { $set: { adventures: [...teacher.adventures, adventure_entry.insertedId] } }));
+            await (db === null || db === void 0 ? void 0 : db.collection("teachers").updateOne({ _id: ObjectId.createFromHexString(teacher_id) }, { $set: { adventures: [...teacher.adventures, adventure_entry.insertedId] } }));
             res.send("success");
         }
     }
