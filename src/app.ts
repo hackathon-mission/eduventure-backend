@@ -46,7 +46,7 @@ interface Teacher {
     realname: string;
     pronouns: string;
     avatar: string | null;
-    adventures: Adventure[];
+    adventures: ObjectId[];
 }
 
 interface UserAdventure {
@@ -157,36 +157,35 @@ app.post('/teacher/adventure', async (req, res) => {
     }
 });
 
-app.post('/teacher/adventure', async (req, res) => {
-    const { teacher_id, adventure } = req.body;
-    const db = client?.db('eduventure');
-    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
+// app.post('/teacher/adventure', async (req, res) => {
+//     const { teacher_id, adventure } = req.body;
+//     const db = client?.db('eduventure');
+//     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
 
-    if (!teacher) {
-        res.status(404).send('Teacher not found');
-    } else {
-        const updatedTeacher = { ...teacher, adventures: [...teacher.adventures, adventure] };
-        await db?.collection<Teacher>('teachers').updateOne({ _id: teacher_id }, { $set: updatedTeacher });
-        res.send(updatedTeacher);
-    }
-});
+//     if (!teacher) {
+//         res.status(404).send('Teacher not found');
+//     } else {
+//         await db?.collection<Adventure>('adventures').insertOne(adventure);
+//         await 
+//     }
+// });
 
-app.get('/teacher/adventure/:teacher_id/:adventure_id', async (req, res) => {
-    const { adventure_id, teacher_id } = req.params;
-    const db = client?.db('eduventure');
-    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
+// app.get('/teacher/adventure/:teacher_id/:adventure_id', async (req, res) => {
+//     const { adventure_id, teacher_id } = req.params;
+//     const db = client?.db('eduventure');
+//     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 
-    if (!teacher) {
-        res.status(404).send('Teacher not found');
-    } else {
-        const adventure = teacher.adventures.find((adv) => adv._id === ObjectId.createFromHexString(adventure_id));
-        if (!adventure) {
-            res.status(404).send('Adventure not found');
-        } else {
-            res.send(adventure);
-        }
-    }
-});
+//     if (!teacher) {
+//         res.status(404).send('Teacher not found');
+//     } else {
+//         const adventure = teacher.adventures.find((adv) => adv._id === ObjectId.createFromHexString(adventure_id));
+//         if (!adventure) {
+//             res.status(404).send('Adventure not found');
+//         } else {
+//             res.send(adventure);
+//         }
+//     }
+// });
 
 app.post('/teacher/register', async (req, res) => {
     const { username, realname } = req.body;
