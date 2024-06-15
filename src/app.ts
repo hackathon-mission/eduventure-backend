@@ -242,11 +242,12 @@ app.get('/teacher/:id', async (req, res) => {
 });
 
 app.get('users', async (req, res) => {
+    
     const db = client?.db('eduventure');
-    const users = await db?.collection<User>('users').find();
+    const users = await db?.collection<User>('users').find({}).toArray();
 
     if (!users) {
-        res.status(404).send('User not found');
+        res.status(500).send('Unable to fetch users!');
     } else {
         res.send(users);
     }
