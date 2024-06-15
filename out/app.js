@@ -12,7 +12,7 @@ await (client === null || client === void 0 ? void 0 : client.connect());
 app.get('/', async (req, res) => {
     res.send("Hello World");
 });
-app.post('login', async (req, res) => {
+app.post('/login', async (req, res) => {
     const { username } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db('users');
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ username }));
@@ -23,7 +23,7 @@ app.post('login', async (req, res) => {
         res.send(user._id);
     }
 });
-app.post('register', async (req, res) => {
+app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db('users');
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').insertOne({ username }));

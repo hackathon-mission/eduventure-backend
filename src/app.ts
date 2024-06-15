@@ -20,7 +20,7 @@ app.get('/', async (req, res) => {
     res.send("Hello World");
 });
 
-app.post('login', async (req, res) => {
+app.post('/login', async (req, res) => {
     const { username } = req.body;
     const db = client?.db('users');
 
@@ -33,7 +33,7 @@ app.post('login', async (req, res) => {
     }
 });
 
-app.post('register', async (req, res) => {
+app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const db = client?.db('users');
 
