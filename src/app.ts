@@ -171,23 +171,23 @@ app.post('/teacher/adventure', async (req, res) => {
     }
 });
 
-// app.get('/teacher/adventure/:adventure_id', async (req, res) => {
-//     const { adventure_id } = req.params;
-//     const { teacher_id } = req.query;
-//     const db = client?.db('eduventure');
-//     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
+app.get('/teacher/adventure/:adventure_id', async (req, res) => {
+    const { adventure_id } = req.params;
+    const { teacher_id } = req.cookies;
+    const db = client?.db('eduventure');
+    const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 
-//     if (!teacher) {
-//         res.status(404).send('Teacher not found');
-//     } else {
-//         const adventure = teacher.adventures.find((adv) => adv._id === adventure_id);
-//         if (!adventure) {
-//             res.status(404).send('Adventure not found');
-//         } else {
-//             res.send(adventure);
-//         }
-//     }
-// });
+    if (!teacher) {
+        res.status(404).send('Teacher not found');
+    } else {
+        const adventure = teacher.adventures.find((adv) => adv._id === ObjectId.createFromHexString(adventure_id));
+        if (!adventure) {
+            res.status(404).send('Adventure not found');
+        } else {
+            res.send(adventure);
+        }
+    }
+});
 
 app.post('/teacher/register', async (req, res) => {
     const { username, realname } = req.body;
