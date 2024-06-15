@@ -295,7 +295,7 @@ app.get('/users', async (req, res) => {
     res.send(users);
 });
 
-app.get('user/:id', async (req, res) => {
+app.get('/user/:id', async (req, res) => {
     const { id } = req.params;
     const db = client?.db(process.env.DB_NAME);
     const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(id) });

@@ -195,7 +195,7 @@ app.get('/users', async (req, res) => {
     const users = await (db === null || db === void 0 ? void 0 : db.collection('users').find().toArray());
     res.send(users);
 });
-app.get('user/:id', async (req, res) => {
+app.get('/user/:id', async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
