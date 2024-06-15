@@ -309,6 +309,7 @@ app.post('/make_user_adventure', async (req, res) => {
         res.status(404).send('User not found');
     } else {
         const base_adventure_size = await getBaseAdventureSize(base_adventure_id);
+
         console.log(base_adventure_size);
         const user_adventure: UserAdventure = {
             base_adventure_id: ObjectId.createFromHexString(base_adventure_id),
