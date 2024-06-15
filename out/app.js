@@ -38,7 +38,7 @@ app.post('/register', async (req, res) => {
         },
         presented_items: []
     };
-    await (db === null || db === void 0 ? void 0 : db.collection('users').insertOne({ user }));
+    await (db === null || db === void 0 ? void 0 : db.collection('users').insertOne(user));
     res.send("success");
 });
 app.listen(process.env.PORT, () => {

@@ -68,7 +68,7 @@ app.post('/register', async (req, res) => {
         presented_items: []
     }
 
-    await db?.collection('users').insertOne({ user });
+    await db?.collection<User>('users').insertOne(user);
 
     res.send("success");
 });
