@@ -173,7 +173,7 @@ app.get('/listing/:id', async (req, res) => {
 
 app.post('/sell/:id', async (req, res) => {
     const { id } = req.params;
-    const { ObjectId: buyer } = req.body;
+    const { string: buyer } = req.body;
     const db = client?.db(process.env.DB_NAME);
     const listing = await db?.collection<Listing>('listings').findOne({ _id: ObjectId.createFromHexString(id) });
 
@@ -181,7 +181,7 @@ app.post('/sell/:id', async (req, res) => {
         res.status(404).send('Listing not found');
     } else {
         await add_xp(listing.seller, listing.price);
-        await add_xp(buyer, -listing.price);
+        await add_xp(ObjectId.createFromHexString(buyer), -listing.price);
         await transfer_item(listing.seller, buyer, listing.item);
         await db?.collection<Listing>('listings').deleteOne({ _id: ObjectId.createFromHexString(id) });
         res.send("success");

@@ -89,7 +89,7 @@ app.get('/listing/:id', async (req, res) => {
 });
 app.post('/sell/:id', async (req, res) => {
     const { id } = req.params;
-    const { ObjectId: buyer } = req.body;
+    const { string: buyer } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const listing = await (db === null || db === void 0 ? void 0 : db.collection('listings').findOne({ _id: ObjectId.createFromHexString(id) }));
     if (!listing) {
@@ -97,7 +97,7 @@ app.post('/sell/:id', async (req, res) => {
     }
     else {
         await add_xp(listing.seller, listing.price);
-        await add_xp(buyer, -listing.price);
+        await add_xp(ObjectId.createFromHexString(buyer), -listing.price);
         await transfer_item(listing.seller, buyer, listing.item);
         await (db === null || db === void 0 ? void 0 : db.collection('listings').deleteOne({ _id: ObjectId.createFromHexString(id) }));
         res.send("success");
