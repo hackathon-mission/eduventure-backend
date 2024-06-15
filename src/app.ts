@@ -58,14 +58,14 @@ interface UserAdventure {
 // helper functions
 
 let teacherExists = (username: string): boolean => {
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const teacher = db?.collection<Teacher>('teachers').findOne({ username });
 
     return teacher ? true : false;
 }
 
 let userExists = (username: string): boolean => {
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const user = db?.collection<User>('users').findOne({
         username
     });
@@ -93,7 +93,7 @@ app.get('/', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { username } = req.body;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
 
     console.log(username);
 
@@ -108,7 +108,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/register', async (req, res) => {
     const { username } = req.body;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const user: User = {
         username,
         pronouns: '',
@@ -129,7 +129,7 @@ app.post('/register', async (req, res) => {
 
 app.post('/teacher/login', async (req, res) => {
     const { username } = req.body;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
 
     console.log(username);
 
@@ -145,7 +145,7 @@ app.post('/teacher/login', async (req, res) => {
 app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
     console.log(teacher_id);
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 
     if (!teacher) {
@@ -159,7 +159,7 @@ app.post('/teacher/adventure', async (req, res) => {
 
 app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: teacher_id });
 
     if (!teacher) {
@@ -177,7 +177,7 @@ app.post('/teacher/adventure', async (req, res) => {
 
 // app.get('/teacher/adventure/:teacher_id/:adventure_id', async (req, res) => {
 //     const { adventure_id, teacher_id } = req.params;
-//     const db = client?.db('eduventure');
+//     const db = client?.db(process.env.DB_NAME);
 //     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 
 //     if (!teacher) {
@@ -194,7 +194,7 @@ app.post('/teacher/adventure', async (req, res) => {
 
 app.post('/teacher/register', async (req, res) => {
     const { username, realname } = req.body;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const teacher: Teacher = {
         username,
         realname,
@@ -210,7 +210,7 @@ app.post('/teacher/register', async (req, res) => {
 
 app.get('user/:id', async (req, res) => {
     const { id } = req.params;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(id) });
 
     if (!user) {
@@ -222,7 +222,7 @@ app.get('user/:id', async (req, res) => {
 
 app.post('/user/:id', async (req: any, res: any) => {
     const { id } = req.params;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const user = await db?.collection<User>('users').findOne({ _id: id });
 
     if (!user) {
@@ -236,7 +236,7 @@ app.post('/user/:id', async (req: any, res: any) => {
 
 app.get('/teacher/:id', async (req, res) => {
     const { id } = req.params;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(id) });
 
     if (!teacher) {
@@ -248,7 +248,7 @@ app.get('/teacher/:id', async (req, res) => {
 
 app.post('/teacher/:id', async (req, res) => {
     const { id } = req.params;
-    const db = client?.db('eduventure');
+    const db = client?.db(process.env.DB_NAME);
     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(id) });
 
     if (!teacher) {

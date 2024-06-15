@@ -3,12 +3,12 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { configDotenv } from 'dotenv';
 // helper functions
 let teacherExists = (username) => {
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const teacher = db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ username });
     return teacher ? true : false;
 };
 let userExists = (username) => {
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const user = db === null || db === void 0 ? void 0 : db.collection('users').findOne({
         username
     });
@@ -27,7 +27,7 @@ app.get('/', async (req, res) => {
 });
 app.post('/login', async (req, res) => {
     const { username } = req.body;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     console.log(username);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ username }));
     if (!user) {
@@ -39,7 +39,7 @@ app.post('/login', async (req, res) => {
 });
 app.post('/register', async (req, res) => {
     const { username } = req.body;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const user = {
         username,
         pronouns: '',
@@ -57,7 +57,7 @@ app.post('/register', async (req, res) => {
 });
 app.post('/teacher/login', async (req, res) => {
     const { username } = req.body;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     console.log(username);
     const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ username }));
     if (!teacher) {
@@ -70,7 +70,7 @@ app.post('/teacher/login', async (req, res) => {
 app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
     console.log(teacher_id);
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) }));
     if (!teacher) {
         res.status(404).send('Teacher not found');
@@ -83,7 +83,7 @@ app.post('/teacher/adventure', async (req, res) => {
 });
 app.post('/teacher/adventure', async (req, res) => {
     const { teacher_id, adventure } = req.body;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: teacher_id }));
     if (!teacher) {
         res.status(404).send('Teacher not found');
@@ -101,7 +101,7 @@ app.post('/teacher/adventure', async (req, res) => {
 });
 // app.get('/teacher/adventure/:teacher_id/:adventure_id', async (req, res) => {
 //     const { adventure_id, teacher_id } = req.params;
-//     const db = client?.db('eduventure');
+//     const db = client?.db(process.env.DB_NAME);
 //     const teacher = await db?.collection<Teacher>('teachers').findOne({ _id: ObjectId.createFromHexString(teacher_id) });
 //     if (!teacher) {
 //         res.status(404).send('Teacher not found');
@@ -116,7 +116,7 @@ app.post('/teacher/adventure', async (req, res) => {
 // });
 app.post('/teacher/register', async (req, res) => {
     const { username, realname } = req.body;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const teacher = {
         username,
         realname,
@@ -129,7 +129,7 @@ app.post('/teacher/register', async (req, res) => {
 });
 app.get('user/:id', async (req, res) => {
     const { id } = req.params;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
     if (!user) {
         res.status(404).send('User not found');
@@ -140,7 +140,7 @@ app.get('user/:id', async (req, res) => {
 });
 app.post('/user/:id', async (req, res) => {
     const { id } = req.params;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: id }));
     if (!user) {
         res.status(404).send('User not found');
@@ -153,7 +153,7 @@ app.post('/user/:id', async (req, res) => {
 });
 app.get('/teacher/:id', async (req, res) => {
     const { id } = req.params;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: ObjectId.createFromHexString(id) }));
     if (!teacher) {
         res.status(404).send('Teacher not found');
@@ -164,7 +164,7 @@ app.get('/teacher/:id', async (req, res) => {
 });
 app.post('/teacher/:id', async (req, res) => {
     const { id } = req.params;
-    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const teacher = await (db === null || db === void 0 ? void 0 : db.collection('teachers').findOne({ _id: ObjectId.createFromHexString(id) }));
     if (!teacher) {
         res.status(404).send('Teacher not found');
