@@ -210,6 +210,7 @@ app.post('/make_user_adventure', async (req, res) => {
     }
     else {
         const base_adventure_size = await getBaseAdventureSize(base_adventure_id);
+        console.log(base_adventure_size);
         const user_adventure = {
             base_adventure_id: ObjectId.createFromHexString(base_adventure_id),
             completed: new Array(base_adventure_size).fill(false)
