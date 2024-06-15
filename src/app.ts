@@ -40,7 +40,7 @@ app.get('/', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { username } = req.body;
-    const db = client?.db('users');
+    const db = client?.db('eduventure');
 
     console.log(username);
 
@@ -55,7 +55,7 @@ app.post('/login', async (req, res) => {
 
 app.post('/register', async (req, res) => {
     const { username } = req.body;
-    const db = client?.db('users');
+    const db = client?.db('eduventure');
     const user: User = {
         username,
         pronouns: '',

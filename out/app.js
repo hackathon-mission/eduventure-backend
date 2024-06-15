@@ -14,7 +14,7 @@ app.get('/', async (req, res) => {
 });
 app.post('/login', async (req, res) => {
     const { username } = req.body;
-    const db = client === null || client === void 0 ? void 0 : client.db('users');
+    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
     console.log(username);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ username }));
     if (!user) {
@@ -26,7 +26,7 @@ app.post('/login', async (req, res) => {
 });
 app.post('/register', async (req, res) => {
     const { username } = req.body;
-    const db = client === null || client === void 0 ? void 0 : client.db('users');
+    const db = client === null || client === void 0 ? void 0 : client.db('eduventure');
     const user = {
         username,
         pronouns: '',
