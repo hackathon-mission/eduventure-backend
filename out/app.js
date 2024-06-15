@@ -27,6 +27,7 @@ app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db('users');
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').insertOne({ username }));
+    res.send(user === null || user === void 0 ? void 0 : user.insertedId);
 });
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);

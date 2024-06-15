@@ -38,6 +38,8 @@ app.post('/register', async (req, res) => {
     const db = client?.db('users');
 
     const user = await db?.collection('users').insertOne({ username });
+
+    res.send(user?.insertedId);
 });
 
 app.listen(process.env.PORT, () => {
