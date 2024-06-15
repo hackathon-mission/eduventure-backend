@@ -37,6 +37,7 @@ interface Adventure {
     _id?: string;
     chapters: Chapter[];
     description: string;
+    name: string;
 }
 
 interface Teacher {
