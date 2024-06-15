@@ -39,7 +39,7 @@ app.post('/register', async (req, res) => {
 
     const user = await db?.collection('users').insertOne({ username });
 
-    res.send(user?.insertedId);
+    res.send("success");
 });
 
 app.listen(process.env.PORT, () => {
