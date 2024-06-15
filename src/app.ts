@@ -20,6 +20,26 @@ app.get('/', async (req, res) => {
     res.send("Hello World");
 });
 
+app.post('login', async (req, res) => {
+    const { username } = req.body;
+    const db = client?.db('users');
+
+    const user = await db?.collection('users').findOne({ username });
+
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        res.send(user._id);
+    }
+});
+
+app.post('register', async (req, res) => {
+    const { username, password } = req.body;
+    const db = client?.db('users');
+
+    const user = await db?.collection('users').insertOne({ username });
+});
+
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
 });
