@@ -72,6 +72,8 @@ const getBaseAdventureSize = async (base_adventure_id: string): Promise<number> 
     }
 }
 
+
+
 let teacherExists = (username: string): boolean => {
     const db = client?.db(process.env.DB_NAME);
     const teacher = db?.collection<Teacher>('teachers').findOne({ username });
@@ -173,6 +175,12 @@ app.post('/teacher/adventure', async (req, res) => {
             res.send("success");
         }
     }
+});
+
+app.get('/adventures', async (req, res) => {
+    const db = client?.db(process.env.DB_NAME);
+    const adventures = await db?.collection<Adventure>('adventures').find().toArray();
+    res.send(adventures);
 });
 
 app.get('/teacher/adventures/:teacher_id', async (req, res) => {

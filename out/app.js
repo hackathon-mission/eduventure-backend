@@ -100,6 +100,11 @@ app.post('/teacher/adventure', async (req, res) => {
         }
     }
 });
+app.get('/adventures', async (req, res) => {
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const adventures = await (db === null || db === void 0 ? void 0 : db.collection('adventures').find().toArray());
+    res.send(adventures);
+});
 app.get('/teacher/adventures/:teacher_id', async (req, res) => {
     const { teacher_id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
