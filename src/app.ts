@@ -374,6 +374,7 @@ app.get("user/:id/items", async (req, res) => {
         res.status(404).send('User not found');
     } else {
         const items = await db?.collection<Item>('items').find({ _id: { $in: user.items } }).toArray();
+        console.log(items);
         res.send(items);
     }
 });

@@ -268,6 +268,7 @@ app.get("user/:id/items", async (req, res) => {
     }
     else {
         const items = await (db === null || db === void 0 ? void 0 : db.collection('items').find({ _id: { $in: user.items } }).toArray());
+        console.log(items);
         res.send(items);
     }
 });
