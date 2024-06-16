@@ -150,7 +150,7 @@ app.get('/user/:id/items', async (req, res) => {
 });
 
 
-app.post('/user/:id/avatar', async (req, res) => {
+app.post('/user_avatar/:id/', async (req, res) => {
     const { id } = req.params;
     const { avatar_id } = req.body;
     const db = client?.db(process.env.DB_NAME);
