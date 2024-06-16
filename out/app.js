@@ -259,7 +259,7 @@ app.delete('/adventure/:id', async (req, res) => {
         res.send("success");
     }
 });
-app.get("user/:id/items", async (req, res) => {
+app.get("/user/:id/items", async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));

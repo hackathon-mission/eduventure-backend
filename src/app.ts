@@ -365,7 +365,7 @@ app.delete('/adventure/:id', async (req, res) => {
     }
 });
 
-app.get("user/:id/items", async (req, res) => {
+app.get("/user/:id/items", async (req, res) => {
     const { id } = req.params;
     const db = client?.db(process.env.DB_NAME);
     const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(id) });
