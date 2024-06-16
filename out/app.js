@@ -73,11 +73,16 @@ app.post('/user/:id/join_adventure/:adventure_id', async (req, res) => {
         res.send("success");
     }
 });
-app.get("/avatar/:id", (req, res) => {
+app.get("/avatar/:id", async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
-    const item = db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: ObjectId.createFromHexString(id) });
-    res.send(item);
+    const item = await (db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!item) {
+        res.status(404).send('Item not found');
+    }
+    else {
+        res.send(item);
+    }
 });
 app.get('/item/:id', async (req, res) => {
     const { id } = req.params;
