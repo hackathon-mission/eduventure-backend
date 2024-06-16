@@ -11,7 +11,7 @@ interface User {
     pronouns: string;
     xp: number;
     avatar: ObjectId | null;
-    items: ObjectId[];
+    items: string[];
     presented_items: ObjectId[];
     user_adventures: UserAdventure[];
 }
@@ -123,8 +123,8 @@ const transfer_item = async (seller_id: ObjectId, buyer_id: ObjectId, item_id: O
     if (!item || !seller || !buyer) {
         return;
     } else {
-        await db?.collection<User>('users').updateOne({ _id: seller_id }, { $set: { items: seller.items.filter((id) => id != item_id) } });
-        await db?.collection<User>('users').updateOne({ _id: buyer_id }, { $set: { items: [...buyer.items, item_id] } });
+        await db?.collection<User>('users').updateOne({ _id: seller_id }, { $set: { items: seller.items.filter((id) => ObjectId.createFromHexString(id) != item_id) } });
+        await db?.collection<User>('users').updateOne({ _id: buyer_id }, { $set: { items: [...buyer.items, item_id.toString()] } });
     }
 }
 
@@ -376,7 +376,7 @@ app.get("/user/:id/items", async (req, res) => {
         let items: Item[] = []
         for (let i = 0; i < user.items.length; i++) {
             console.log(user.items[i]);
-            const item = await db?.collection<Item>('items').findOne({ _id: user.items[i] });
+            const item = await db?.collection<Item>('items').findOne({ _id: ObjectId.createFromHexString(user.items[i]) });
             if (item) {
                 items.push(item);
             }

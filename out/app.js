@@ -48,8 +48,8 @@ const transfer_item = async (seller_id, buyer_id, item_id) => {
         return;
     }
     else {
-        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: seller_id }, { $set: { items: seller.items.filter((id) => id != item_id) } }));
-        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: buyer_id }, { $set: { items: [...buyer.items, item_id] } }));
+        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: seller_id }, { $set: { items: seller.items.filter((id) => ObjectId.createFromHexString(id) != item_id) } }));
+        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: buyer_id }, { $set: { items: [...buyer.items, item_id.toString()] } }));
     }
 };
 app.get('/', async (req, res) => {
@@ -270,7 +270,7 @@ app.get("/user/:id/items", async (req, res) => {
         let items = [];
         for (let i = 0; i < user.items.length; i++) {
             console.log(user.items[i]);
-            const item = await (db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: user.items[i] }));
+            const item = await (db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: ObjectId.createFromHexString(user.items[i]) }));
             if (item) {
                 items.push(item);
             }
