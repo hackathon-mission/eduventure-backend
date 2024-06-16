@@ -55,6 +55,23 @@ const transfer_item = async (seller_id, buyer_id, item_id) => {
 app.get('/', async (req, res) => {
     res.send("Hello World");
 });
+app.get("/avatar/:id", (req, res) => {
+    const { id } = req.params;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const item = db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: ObjectId.createFromHexString(id) });
+    res.send(item);
+});
+app.get('/item/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const item = await (db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!item) {
+        res.status(404).send('Item not found');
+    }
+    else {
+        res.send(item);
+    }
+});
 app.post('/listing', async (req, res) => {
     const { name, description, item, seller, price } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);

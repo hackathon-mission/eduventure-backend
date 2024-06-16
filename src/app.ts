@@ -132,6 +132,25 @@ app.get('/', async (req, res) => {
     res.send("Hello World");
 });
 
+app.get("/avatar/:id", (req, res) => {
+    const { id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const item = db?.collection<Item>('items').findOne({ _id: ObjectId.createFromHexString(id) });
+    res.send(item)
+})
+
+app.get('/item/:id', async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const item = await db?.collection<Item>('items').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!item) {
+        res.status(404).send('Item not found');
+    } else {
+        res.send(item);
+    }
+});
+
 app.post('/listing', async (req, res) => {
     const { name, description, item, seller, price } = req.body;
     const db = client?.db(process.env.DB_NAME);
