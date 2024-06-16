@@ -263,13 +263,17 @@ app.get("/user/:id/items", async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
-    console.log("hello");
     if (!user) {
         res.status(404).send('User not found');
     }
     else {
-        const items = await (db === null || db === void 0 ? void 0 : db.collection('items').find({ _id: { $in: user.items } }).toArray());
-        console.log(items);
+        let items = [];
+        for (let i = 0; i < user.items.length; i++) {
+            const item = await (db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: user.items[i] }));
+            if (item) {
+                items.push(item);
+            }
+        }
         res.send(items);
     }
 });
