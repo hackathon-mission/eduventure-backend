@@ -259,6 +259,18 @@ app.delete('/adventure/:id', async (req, res) => {
         res.send("success");
     }
 });
+app.get("user/:id/items", async (req, res) => {
+    const { id } = req.params;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!user) {
+        res.status(404).send('User not found');
+    }
+    else {
+        const items = await (db === null || db === void 0 ? void 0 : db.collection('items').find({ _id: { $in: user.items } }).toArray());
+        res.send(items);
+    }
+});
 app.post('/user_adventure/', async (req, res) => {
     const { adventure_index, completed_index, completed, user_id } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);

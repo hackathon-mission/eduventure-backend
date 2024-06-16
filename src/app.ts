@@ -365,6 +365,19 @@ app.delete('/adventure/:id', async (req, res) => {
     }
 });
 
+app.get("user/:id/items", async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        const items = await db?.collection<Item>('items').find({ _id: { $in: user.items } }).toArray();
+        res.send(items);
+    }
+});
+
 app.post('/user_adventure/', async (req, res) => {
     const { adventure_index, completed_index, completed, user_id } = req.body;
     const db = client?.db(process.env.DB_NAME);
