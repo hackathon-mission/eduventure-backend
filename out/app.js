@@ -68,6 +68,7 @@ app.post('/user/:id/join_adventure/:adventure_id', async (req, res) => {
             index: user.user_adventures.length,
             completed: new Array(await getBaseAdventureSize(adventure_id)).fill(false)
         };
+        console.log(new_adventure);
         await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { user_adventures: [...user.user_adventures, new_adventure] } }));
         res.send("success");
     }
