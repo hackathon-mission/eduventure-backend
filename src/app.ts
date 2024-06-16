@@ -159,7 +159,7 @@ app.post('/user/:id/avatar', async (req, res) => {
         res.status(404).send('User not found');
     } else {
         await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { avatar: avatar_id } });
-        res.send("success");
+        res.status(200).send("success");
     }
 });
 

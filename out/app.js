@@ -81,7 +81,7 @@ app.post('/user/:id/avatar', async (req, res) => {
     }
     else {
         await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { avatar: avatar_id } }));
-        res.send("success");
+        res.status(200).send("success");
     }
 });
 app.post('/user/:id/join_adventure/:adventure_id', async (req, res) => {
