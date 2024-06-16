@@ -263,6 +263,7 @@ app.get("user/:id/items", async (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
     const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
+    console.log("hello");
     if (!user) {
         res.status(404).send('User not found');
     }
