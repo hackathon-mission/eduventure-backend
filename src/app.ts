@@ -373,13 +373,10 @@ app.get("/user/:id/items", async (req, res) => {
     if (!user) {
         res.status(404).send('User not found');
     } else {
-        let items: Item[] = []
-        for (let i = 0; i < user.items.length; i++) {
-            console.log(user.items[i]);
-            const item = await db?.collection<Item>('items').findOne({ _id: ObjectId.createFromHexString(user.items[i]) });
-            if (item) {
-                items.push(item);
-            }
+        const items = await db?.collection<Item>('items').find({ _id: { $in: user.items.map((id) => ObjectId.createFromHexString(id)) } }).toArray();
+        if (!items) {
+            res.status(404).send('Items not found');
+            return
         }
         res.send(items);
     }
