@@ -55,6 +55,35 @@ const transfer_item = async (seller_id, buyer_id, item_id) => {
 app.get('/', async (req, res) => {
     res.send("Hello World");
 });
+app.get('/user/:id/items', async (req, res) => {
+    const { id } = req.params;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!user) {
+        res.status(404).send('User not found');
+    }
+    else {
+        const items = await (db === null || db === void 0 ? void 0 : db.collection('items').find({ _id: { $in: user.items.map((id) => ObjectId.createFromHexString(id)) } }).toArray());
+        if (!items) {
+            res.status(404).send('Items not found');
+            return;
+        }
+        res.send(items);
+    }
+});
+app.post('/user/:id/avatar', async (req, res) => {
+    const { id } = req.params;
+    const { avatar_id } = req.body;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!user) {
+        res.status(404).send('User not found');
+    }
+    else {
+        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { avatar: avatar_id } }));
+        res.send("success");
+    }
+});
 app.post('/user/:id/join_adventure/:adventure_id', async (req, res) => {
     const { id, adventure_id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
