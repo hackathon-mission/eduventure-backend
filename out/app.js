@@ -269,6 +269,7 @@ app.get("/user/:id/items", async (req, res) => {
     else {
         let items = [];
         for (let i = 0; i < user.items.length; i++) {
+            console.log(user.items[i]);
             const item = await (db === null || db === void 0 ? void 0 : db.collection('items').findOne({ _id: user.items[i] }));
             if (item) {
                 items.push(item);
