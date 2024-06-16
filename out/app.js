@@ -55,6 +55,23 @@ const transfer_item = async (seller_id, buyer_id, item_id) => {
 app.get('/', async (req, res) => {
     res.send("Hello World");
 });
+app.post('/user/:id/join_adventure/:adventure_id', async (req, res) => {
+    const { id, adventure_id } = req.params;
+    const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
+    const user = await (db === null || db === void 0 ? void 0 : db.collection('users').findOne({ _id: ObjectId.createFromHexString(id) }));
+    if (!user) {
+        res.status(404).send('User not found');
+    }
+    else {
+        const new_adventure = {
+            base_adventure_id: adventure_id,
+            index: user.user_adventures.length,
+            completed: new Array(await getBaseAdventureSize(adventure_id)).fill(false)
+        };
+        await (db === null || db === void 0 ? void 0 : db.collection('users').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { user_adventures: [...user.user_adventures, new_adventure] } }));
+        res.send("success");
+    }
+});
 app.get("/avatar/:id", (req, res) => {
     const { id } = req.params;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
@@ -307,6 +324,7 @@ app.get('/adventure/:id', async (req, res) => {
         res.send(adventure);
     }
 });
+// deprecated
 app.post('/make_user_adventure', async (req, res) => {
     const { user_id, base_adventure_id } = req.body;
     const db = client === null || client === void 0 ? void 0 : client.db(process.env.DB_NAME);
@@ -318,7 +336,7 @@ app.post('/make_user_adventure', async (req, res) => {
         const base_adventure_size = await getBaseAdventureSize(base_adventure_id);
         console.log(base_adventure_size);
         const user_adventure = {
-            base_adventure_id: ObjectId.createFromHexString(base_adventure_id),
+            base_adventure_id: base_adventure_id,
             completed: new Array(base_adventure_size).fill(false),
             index: user.user_adventures.length
         };

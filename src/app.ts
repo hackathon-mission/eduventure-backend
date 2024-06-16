@@ -62,7 +62,7 @@ interface Teacher {
 
 interface UserAdventure {
     _id?: ObjectId;
-    base_adventure_id: ObjectId;
+    base_adventure_id: string;
     index: number;
     completed: boolean[];
 }
@@ -130,6 +130,24 @@ const transfer_item = async (seller_id: ObjectId, buyer_id: ObjectId, item_id: O
 
 app.get('/', async (req, res) => {
     res.send("Hello World");
+});
+
+app.post('/user/:id/join_adventure/:adventure_id', async (req, res) => {
+    const { id, adventure_id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        const new_adventure: UserAdventure = {
+            base_adventure_id: adventure_id,
+            index: user.user_adventures.length,
+            completed: new Array(await getBaseAdventureSize(adventure_id)).fill(false)
+        }
+        await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { user_adventures: [...user.user_adventures, new_adventure] } });
+        res.send("success");
+    }
 });
 
 app.get("/avatar/:id", (req, res) => {
@@ -416,6 +434,8 @@ app.get('/adventure/:id', async (req, res) => {
     }
 });
 
+
+// deprecated
 app.post('/make_user_adventure', async (req, res) => {
     const { user_id, base_adventure_id } = req.body;
     const db = client?.db(process.env.DB_NAME);
@@ -427,7 +447,7 @@ app.post('/make_user_adventure', async (req, res) => {
         const base_adventure_size = await getBaseAdventureSize(base_adventure_id);
         console.log(base_adventure_size);
         const user_adventure: UserAdventure = {
-            base_adventure_id: ObjectId.createFromHexString(base_adventure_id),
+            base_adventure_id: base_adventure_id,
             completed: new Array(base_adventure_size).fill(false),
             index: user.user_adventures.length
         }
