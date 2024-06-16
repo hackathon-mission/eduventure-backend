@@ -132,6 +132,23 @@ app.get('/', async (req, res) => {
     res.send("Hello World");
 });
 
+app.get('/user/:id/items', async (req, res) => {
+    const { id } = req.params;
+    const db = client?.db(process.env.DB_NAME);
+    const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        const items = await db?.collection<Item>('items').find({ _id: { $in: user.items.map((id) => ObjectId.createFromHexString(id)) } }).toArray();
+        if (!items) {
+            res.status(404).send('Items not found');
+            return
+        }
+        res.send(items);
+    }
+});
+
 app.post('/user/:id/join_adventure/:adventure_id', async (req, res) => {
     const { id, adventure_id } = req.params;
     const db = client?.db(process.env.DB_NAME);
