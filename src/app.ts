@@ -149,6 +149,20 @@ app.get('/user/:id/items', async (req, res) => {
     }
 });
 
+app.post('/user/:id/avatar', async (req, res) => {
+    const { id } = req.params;
+    const { avatar_id } = req.body;
+    const db = client?.db(process.env.DB_NAME);
+    const user = await db?.collection<User>('users').findOne({ _id: ObjectId.createFromHexString(id) });
+
+    if (!user) {
+        res.status(404).send('User not found');
+    } else {
+        await db?.collection<User>('users').updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { avatar: avatar_id } });
+        res.send("success");
+    }
+});
+
 app.post('/user/:id/join_adventure/:adventure_id', async (req, res) => {
     const { id, adventure_id } = req.params;
     const db = client?.db(process.env.DB_NAME);
